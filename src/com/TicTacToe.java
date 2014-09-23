@@ -5,108 +5,143 @@ package com;
  */
 public class TicTacToe {
 
-    // constant for the board size
-    public static final int NUM_OF_ROWS  = 3;
-    public static final int NUM_OF_COLS  = 3;
+    private int[][] board = new int[Constants.NUM_OF_ROWS][Constants.NUM_OF_COLS];
 
-
-    // static value for side or piece 
-    public static final int HUMAN        = 0;
-    public static final int COMPUTER     = 1;
-    public static final int EMPTY        = 2;
-
-    // static value for game status
-    public static final int HUMAN_WIN    = 0;
-    public static final int DRAW         = 1;
-    public static final int UNCLEAR      = 2;
-    public static final int COMPUTER_WIN = 3;
-
-    private int[][] board = new int[NUM_OF_ROWS][NUM_OF_COLS];
-
+    /**
+     * This is the constructor.
+     */
     public TicTacToe () {
         clearBoard();
     }
 
-    // make the board empty
+    /**
+     * Clear the board.
+     */
     public void clearBoard() {
-        // to complete
+        for(int i = 0; i < Constants.NUM_OF_ROWS; i++){
+            for (int j = 0; j < Constants.NUM_OF_COLS; j++){
+                board[i][j] = Constants.EMPTY;
+            }
+        }
     }
 
-    // return the board
-    public int[][] getBoard () {
-        return new int[5][5];
+    /**
+     * Get the board.
+     * @return
+     */
+    public int[][] getNewBoard () {
+        return new int[Constants.NUM_OF_ROWS][Constants.NUM_OF_COLS];
     }
 
-    // test if a position is empty
+    /**
+     * Test if the position is empty.
+     * @param row
+     * @param column
+     * @return
+     */
     private boolean isEmpty (int row, int column) {
-        return false;
+        return board[row][column] == 2;
     }
 
-    // compute and return static value for current game status
+    /**
+     * Compute and return static values for the game status
+     * @return
+     */
     private int gameStatus () {
-        return isWin(COMPUTER) ? COMPUTER_WIN :
-                isWin(HUMAN)    ? HUMAN_WIN :
-                        boardIsFull()   ? DRAW : UNCLEAR;
+        int returnVal = Constants.UNCLEAR;
+        if (isWin(Constants.COMPUTER)){
+            returnVal = Constants.COMPUTER_WIN;
+        } else {
+            if (isWin(Constants.HUMAN)){
+                returnVal = Constants.HUMAN_WIN;
+            } else {
+                returnVal = Constants.DRAW;
+            }
+        }
+        return returnVal;
     }
 
-    // return true if the board is full
+    /**
+     * Return true if the board is full
+     * @return
+     */
     public boolean boardIsFull () {
-        return false;
+        boolean boardHasEmpty = false;
+        for(int i = 0; i < Constants.NUM_OF_ROWS; i++){
+            for (int j = 0; j < Constants.NUM_OF_COLS; j++){
+                if (board[i][j] == Constants.EMPTY) {
+                    boardHasEmpty = true;
+                }
+            }
+        }
+
+        return !boardHasEmpty;
     }
 
-    // computer the optimal move for a side
+    /**\
+     * Compute the optimal move for a side
+     * @param side
+     * @return
+     */
     public Position chooseMove (int side) {
-        int opp;              // The other side
-        Position reply;       // Opponent's best reply
-        int simpleEval;       // Result of an immediate evaluation
-        int bestRow = 0;
-        int bestColumn = 0;
-        int value;
+        int opp, simpleEvaluation, value;
+        int bestRow = 0, bestColumn = 0;
+        Position reply;
 
-        if ((simpleEval = gameStatus()) != UNCLEAR)
-            return new Position(simpleEval);
-
-        if(side == COMPUTER) {
-            opp = HUMAN; value = HUMAN_WIN;
-        }
-        else  {
-            opp = COMPUTER; value = COMPUTER_WIN;
+        if ((simpleEvaluation = gameStatus()) != Constants.UNCLEAR){
+            return new Position(simpleEvaluation);
         }
 
-        for (int row = 0; row < NUM_OF_ROWS; row++)
-            for (int column = 0; column < NUM_OF_COLS; column++)
+        if(side == Constants.COMPUTER) {
+            opp = Constants.HUMAN;
+            value = Constants.HUMAN_WIN;
+        } else {
+            opp = Constants.COMPUTER;
+            value = Constants.COMPUTER_WIN;
+        }
+
+        for (int row = 0; row < Constants.NUM_OF_ROWS; row++)
+            for (int column = 0; column < Constants.NUM_OF_COLS; column++)
                 if (isEmpty(row, column)) {
                     placePiece (row, column, side);
                     reply = chooseMove(opp);
-                    placePiece (row, column, EMPTY);
-                    if(side == COMPUTER && reply.value > value ||
-                            side == HUMAN && reply.value < value)     {
-                        if(side == COMPUTER)
-                            value = reply.value;
-                        else
-                            value = reply.value;
-
-                        bestRow = row; bestColumn = column;
+                    placePiece (row, column, Constants.EMPTY);
+                    if(side == Constants.COMPUTER && reply.value > value || side == Constants.HUMAN && reply.value < value) {
+                        value = reply.value;
+                        bestRow = row;
+                        bestColumn = column;
                     }
                 }
 
         return new Position (value, bestRow, bestColumn);
     }
 
-    // play a move, after checking its legality
-    // return true if the intended position is within the 
-    // boundary of the board and is empty
+    /**
+     * Play a move, after checking its legality return true if the intended position is within the boundary of the board and is empty.
+     * @param side
+     * @param row
+     * @param column
+     * @return
+     */
     public boolean makeMove (int side, int row, int column) {
         return false;
     }
 
-    // place a piece in a position, possibly clearing a position
-    // a private method � no need to check legality
+    /**
+     * Place a piece in a position, possibly clearing a position a private method � no need to check legality
+     * @param row
+     * @param column
+     * @param piece
+     */
     private void placePiece (int row, int column, int piece) {
         //TODO: To complete
     }
 
-    // return true if the board shows a win for the side
+    /**
+     * Return true if the board shows a win for the side
+     * @param side
+     * @return
+     */
     public boolean isWin(int side)  {
         return false;
     }
