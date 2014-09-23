@@ -143,6 +143,41 @@ public class TicTacToe {
      * @return
      */
     public boolean isWin(int side)  {
+        if (!checkForRowWin(side)){
+            if(!checkForColumnWin(side)){
+                return checkForDiagonalWin(side);
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Checks for a win in any row.
+     * @param side
+     * @return
+     */
+    private boolean checkForRowWin(int side){
+        return false;
+    }
+
+    /**
+     * Checks for a win in any column.
+     * @param side
+     * @return
+     */
+    private boolean checkForColumnWin(int side){
+        return false;
+    }
+
+    /**
+     * Checks for a win in any diagonal.
+     * @param side
+     * @return
+     */
+    private boolean checkForDiagonalWin(int side){
         return false;
     }
 }
