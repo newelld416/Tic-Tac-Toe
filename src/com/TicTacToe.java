@@ -136,6 +136,7 @@ public class TicTacToe {
         if (row < Constants.NUM_OF_ROWS && column < Constants.NUM_OF_COLS && board[row][column] == Constants.EMPTY){
             placePiece(row,column,side);
             returnVal = true;
+            printBoard();
         }
 
         return returnVal;
@@ -260,5 +261,16 @@ public class TicTacToe {
             }
         }
         return true;
+    }
+
+    private void printBoard(){
+        System.out.printf("%d|%d|%d\n",board[0][0],board[0][1],board[0][2]);
+        System.out.print("-|-|-\n");
+        System.out.printf("%d|%d|%d\n",board[1][0],board[1][1],board[1][2]);
+        System.out.print("-|-|-\n");
+        System.out.printf("%d|%d|%d\n",board[2][0],board[2][1],board[2][2]);
+
+        System.out.println();
+        System.out.println();
     }
 }
