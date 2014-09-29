@@ -19,28 +19,45 @@ public class TicTacToeTest {
 
     @Test
     public void test() {
-        Position compMove;
-        compMove = new Position (Constants.COMPUTER, 0, 0);
+        HumanWinColumn();
+        ComputerWinColumn();
 
-        // computer plays a move first
-        t.makeMove(Constants.COMPUTER, compMove.row, compMove.column);
-        // then the other side
-        t.makeMove(Constants.HUMAN, 1, 1);
+    }
 
-        // computer plays a move again
-        compMove = t.chooseMove(Constants.COMPUTER);
-        t.makeMove(Constants.COMPUTER, compMove.row, compMove.column);
-        // then the other side
-        t.makeMove(Constants.HUMAN, 1, 2);
+    private void HumanWinColumn(){
+        t.makeMove(Constants.COMPUTER, 0, 0);
+        t.makeMove(Constants.HUMAN, 0, 1);
+        t.makeMove(Constants.COMPUTER, 0, 2);
+        t.makeMove(Constants.HUMAN, 1, 0);
+        t.makeMove(Constants.COMPUTER, 1,2);
+        t.makeMove(Constants.HUMAN,1,1);
+        t.makeMove(Constants.COMPUTER, 2,0);
+        t.makeMove(Constants.HUMAN, 2,1);
 
-        // computer plays a move again
-        compMove = t.chooseMove(Constants.COMPUTER);
-        t.makeMove(Constants.COMPUTER, compMove.row, compMove.column);
+        // Human should win now
+        assertTrue (!t.isWin(Constants.COMPUTER));
+        assertTrue (t.isWin(Constants.HUMAN));
+        assertTrue (!t.boardIsFull());
 
-        // computer should win now
+        t.clearBoard();
+    }
+
+    private void ComputerWinColumn(){
+        t.makeMove(Constants.HUMAN, 0, 0);
+        t.makeMove(Constants.COMPUTER, 0, 1);
+        t.makeMove(Constants.HUMAN, 0, 2);
+        t.makeMove(Constants.COMPUTER, 1, 0);
+        t.makeMove(Constants.HUMAN, 1,2);
+        t.makeMove(Constants.COMPUTER,1,1);
+        t.makeMove(Constants.HUMAN, 2,0);
+        t.makeMove(Constants.COMPUTER, 2,1);
+
+        // Human should win now
         assertTrue (t.isWin(Constants.COMPUTER));
         assertTrue (!t.isWin(Constants.HUMAN));
         assertTrue (!t.boardIsFull());
+
+        t.clearBoard();
     }
 
 }

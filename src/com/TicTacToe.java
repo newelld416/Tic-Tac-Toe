@@ -1,5 +1,10 @@
 package com;
 
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
+import sun.text.resources.CollationData_sk;
+
+import javax.swing.*;
+
 /**
  * Created by Daniel on 9/22/2014.
  */
@@ -18,6 +23,8 @@ public class TicTacToe {
      * Clear the board.
      */
     public void clearBoard() {
+        board = getNewBoard();
+
         for(int i = 0; i < Constants.NUM_OF_ROWS; i++){
             for (int j = 0; j < Constants.NUM_OF_COLS; j++){
                 board[i][j] = Constants.EMPTY;
@@ -40,7 +47,7 @@ public class TicTacToe {
      * @return
      */
     private boolean isEmpty (int row, int column) {
-        return board[row][column] == 2;
+        return board[row][column] == Constants.EMPTY;
     }
 
     /**
@@ -124,7 +131,14 @@ public class TicTacToe {
      * @return
      */
     public boolean makeMove (int side, int row, int column) {
-        return false;
+
+        boolean returnVal = false;
+        if (row < Constants.NUM_OF_ROWS && column < Constants.NUM_OF_COLS && board[row][column] == Constants.EMPTY){
+            placePiece(row,column,side);
+            returnVal = true;
+        }
+
+        return returnVal;
     }
 
     /**
@@ -134,7 +148,7 @@ public class TicTacToe {
      * @param piece
      */
     private void placePiece (int row, int column, int piece) {
-        //TODO: To complete
+        board[row][column] = piece;
     }
 
     /**
@@ -160,16 +174,44 @@ public class TicTacToe {
      * @return
      */
     private boolean checkForRowWin(int side){
-        return false;
+        boolean isWin = false;
+        for(int i = 0; i < Constants.NUM_OF_ROWS; i++){
+
+            //Get the individual row
+            int[] newRow = new int[Constants.NUM_OF_COLS];
+            for(int j = 0; j < Constants.NUM_OF_COLS; j++){
+                newRow[j] = board[i][j];
+            }
+
+            if (checkIndividualWin(newRow, side)){
+                isWin = true;
+                break;
+            }
+        }
+        return isWin;
     }
 
     /**
-     * Checks for a win in any column.
+     * Checks for a win in any row.
      * @param side
      * @return
      */
     private boolean checkForColumnWin(int side){
-        return false;
+        boolean isWin = false;
+        for(int i = 0; i < Constants.NUM_OF_COLS; i++){
+
+            //Get the individual column
+            int[] newRow = new int[Constants.NUM_OF_ROWS];
+            for(int j = 0; j < Constants.NUM_OF_ROWS; j++){
+                newRow[j] = board[j][i];
+            }
+
+            if (checkIndividualWin(newRow, side)){
+                isWin = true;
+                break;
+            }
+        }
+        return isWin;
     }
 
     /**
@@ -178,6 +220,45 @@ public class TicTacToe {
      * @return
      */
     private boolean checkForDiagonalWin(int side){
-        return false;
+        boolean isWin = false;
+
+        for(int i = 0; i < Constants.NUM_OF_COLS; i++){
+            //Get the individual diagonal
+            int[] newRow = new int[Constants.NUM_OF_ROWS];
+            int[] revRow = new int[Constants.NUM_OF_ROWS];
+            int revNumber = Constants.NUM_OF_ROWS;
+            for(int j = 0; j < Constants.NUM_OF_ROWS; j++){
+                revNumber--;
+                newRow[j] = board[j][j];    //Diagonal starting in the top left
+                revRow[j] = board[revNumber][j];    //Diagonal starting in the bottom left
+            }
+
+            if (checkIndividualWin(newRow, side)){
+                isWin = checkIndividualWin(newRow, side);
+                break;
+            }
+
+            if (checkIndividualWin(revRow, side)){
+                isWin = checkIndividualWin(revRow, side);
+                break;
+            }
+        }
+
+        return isWin;
+    }
+
+    /**
+     * Checks to see if an individual row or column is a win for a given side
+     * @param row
+     * @param side
+     * @return
+     */
+    private boolean checkIndividualWin(int[] row, int side){
+        for (int i = 0; i < row.length; i++){
+            if (row[i] != side){
+                return false;
+            }
+        }
+        return true;
     }
 }
