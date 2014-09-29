@@ -18,4 +18,7 @@ public class Constants {
     public static final int DRAW         = 1;
     public static final int UNCLEAR      = 2;
     public static final int COMPUTER_WIN = 3;
+
+    //Configuration Settings
+    public static final boolean PRINT_BOARD = false;
 }

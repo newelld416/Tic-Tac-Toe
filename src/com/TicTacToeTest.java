@@ -7,6 +7,7 @@ import org.junit.Test;
 
 /**
  * Created by Daniel on 9/22/2014.
+ * All tests are designed to work on a board that is 3 X 3
  */
 public class TicTacToeTest {
 
