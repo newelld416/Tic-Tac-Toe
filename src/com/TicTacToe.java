@@ -41,34 +41,6 @@ public class TicTacToe {
     }
 
     /**
-     * Test if the position is empty.
-     * @param row
-     * @param column
-     * @return
-     */
-    private boolean isEmpty (int row, int column) {
-        return board[row][column] == Constants.EMPTY;
-    }
-
-    /**
-     * Compute and return static values for the game status
-     * @return
-     */
-    private int gameStatus () {
-        int returnVal = Constants.UNCLEAR;
-        if (isWin(Constants.COMPUTER)){
-            returnVal = Constants.COMPUTER_WIN;
-        } else {
-            if (isWin(Constants.HUMAN)){
-                returnVal = Constants.HUMAN_WIN;
-            } else {
-                returnVal = Constants.DRAW;
-            }
-        }
-        return returnVal;
-    }
-
-    /**
      * Return true if the board is full
      * @return
      */
@@ -107,19 +79,20 @@ public class TicTacToe {
             value = Constants.COMPUTER_WIN;
         }
 
-        for (int row = 0; row < Constants.NUM_OF_ROWS; row++)
-            for (int column = 0; column < Constants.NUM_OF_COLS; column++)
+        for (int row = 0; row < Constants.NUM_OF_ROWS; row++) {
+            for (int column = 0; column < Constants.NUM_OF_COLS; column++) {
                 if (isEmpty(row, column)) {
-                    placePiece (row, column, side);
+                    placePiece(row, column, side);
                     reply = chooseMove(opp);
-                    placePiece (row, column, Constants.EMPTY);
-                    if(side == Constants.COMPUTER && reply.value > value || side == Constants.HUMAN && reply.value < value) {
+                    placePiece(row, column, Constants.EMPTY);
+                    if (side == Constants.COMPUTER && reply.value > value || side == Constants.HUMAN && reply.value < value) {
                         value = reply.value;
                         bestRow = row;
                         bestColumn = column;
                     }
                 }
-
+            }
+        }
         return new Position (value, bestRow, bestColumn);
     }
 
@@ -145,16 +118,6 @@ public class TicTacToe {
     }
 
     /**
-     * Place a piece in a position, possibly clearing a position a private method � no need to check legality
-     * @param row
-     * @param column
-     * @param piece
-     */
-    private void placePiece (int row, int column, int piece) {
-        board[row][column] = piece;
-    }
-
-    /**
      * Return true if the board shows a win for the side
      * @param side
      * @return
@@ -169,6 +132,16 @@ public class TicTacToe {
         } else {
             return true;
         }
+    }
+
+    /**
+     * Place a piece in a position, possibly clearing a position a private method � no need to check legality
+     * @param row
+     * @param column
+     * @param piece
+     */
+    private void placePiece (int row, int column, int piece) {
+        board[row][column] = piece;
     }
 
     /**
@@ -277,5 +250,33 @@ public class TicTacToe {
 
         System.out.println();
         System.out.println();
+    }
+
+    /**
+     * Compute and return static values for the game status
+     * @return
+     */
+    private int gameStatus () {
+        int returnVal = Constants.UNCLEAR;
+        if (isWin(Constants.COMPUTER)){
+            returnVal = Constants.COMPUTER_WIN;
+        } else {
+            if (isWin(Constants.HUMAN)){
+                returnVal = Constants.HUMAN_WIN;
+            } else {
+                returnVal = Constants.DRAW;
+            }
+        }
+        return returnVal;
+    }
+
+    /**
+     * Test if the position is empty.
+     * @param row
+     * @param column
+     * @return
+     */
+    private boolean isEmpty (int row, int column) {
+        return board[row][column] == Constants.EMPTY;
     }
 }
