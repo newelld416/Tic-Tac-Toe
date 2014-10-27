@@ -12,6 +12,7 @@ import org.junit.Test;
 public class TicTacToeTest {
 
     private TicTacToe t;
+    private int winner;
 
     @Before
     public void setUp() throws Exception {
@@ -40,11 +41,12 @@ public class TicTacToeTest {
         t.makeMove(Constants.HUMAN, 2,1);
 
         // Human should win now
-        assertTrue(!t.isWin(Constants.COMPUTER));
-        assertTrue(t.isWin(Constants.HUMAN));
+        winner = t.isWin();
+        assertTrue(winner != Constants.COMPUTER);
+        assertTrue(winner == Constants.HUMAN);
         assertTrue(!t.boardIsFull());
 
-        t.clearBoard();
+        t.getNewBoard();
     }
 
     private void ComputerWinColumn(){
@@ -57,12 +59,13 @@ public class TicTacToeTest {
         t.makeMove(Constants.HUMAN, 2,0);
         t.makeMove(Constants.COMPUTER, 2,1);
 
-        // Human should win now
-        assertTrue(t.isWin(Constants.COMPUTER));
-        assertTrue(!t.isWin(Constants.HUMAN));
+        // Computer should win now
+        winner = t.isWin();
+        assertTrue(winner == Constants.COMPUTER);
+        assertTrue(winner != Constants.HUMAN);
         assertTrue(!t.boardIsFull());
 
-        t.clearBoard();
+        t.getNewBoard();
     }
 
     private void ComputerWinRow(){
@@ -75,12 +78,13 @@ public class TicTacToeTest {
         t.makeMove(Constants.COMPUTER, 0,2);
         t.makeMove(Constants.HUMAN, 2,2);
 
-        // Human should win now
-        assertTrue(t.isWin(Constants.COMPUTER));
-        assertTrue(!t.isWin(Constants.HUMAN));
+        // Computer should win now
+        winner = t.isWin();
+        assertTrue(t.isWin() == Constants.COMPUTER);
+        assertTrue(t.isWin() != Constants.HUMAN);
         assertTrue(!t.boardIsFull());
 
-        t.clearBoard();
+        t.getNewBoard();
     }
 
     private void HumanWinRow(){
@@ -94,11 +98,12 @@ public class TicTacToeTest {
         t.makeMove(Constants.COMPUTER, 2,2);
 
         // Human should win now
-        assertTrue(!t.isWin(Constants.COMPUTER));
-        assertTrue(t.isWin(Constants.HUMAN));
+        winner = t.isWin();
+        assertTrue(winner != Constants.COMPUTER);
+        assertTrue(winner == Constants.HUMAN);
         assertTrue(!t.boardIsFull());
 
-        t.clearBoard();
+        t.getNewBoard();
     }
 
     private void HumanWinDiagonal(){
@@ -112,11 +117,12 @@ public class TicTacToeTest {
         t.makeMove(Constants.COMPUTER, 0,2);
 
         // Human should win now
-        assertTrue(!t.isWin(Constants.COMPUTER));
-        assertTrue(t.isWin(Constants.HUMAN));
+        winner = t.isWin();
+        assertTrue(winner != Constants.COMPUTER);
+        assertTrue(winner == Constants.HUMAN);
         assertTrue(!t.boardIsFull());
 
-        t.clearBoard();
+        t.getNewBoard();
     }
 
     private void ComputerWinReverseDiagonal(){
@@ -129,12 +135,13 @@ public class TicTacToeTest {
         t.makeMove(Constants.HUMAN, 2,2);
         t.makeMove(Constants.COMPUTER, 0,2);
 
-        // Human should win now
-        assertTrue(t.isWin(Constants.COMPUTER));
-        assertTrue(!t.isWin(Constants.HUMAN));
+        // Computer should win now
+        winner = t.isWin();
+        assertTrue(winner == Constants.COMPUTER);
+        assertTrue(winner != Constants.HUMAN);
         assertTrue(!t.boardIsFull());
 
-        t.clearBoard();
+        t.getNewBoard();
     }
 
     private void BoardIsFull(){
@@ -148,11 +155,13 @@ public class TicTacToeTest {
         t.makeMove(Constants.COMPUTER, 2,1);
         t.makeMove(Constants.COMPUTER,2,2);
 
-        // Human should win now
-        assertTrue(!t.isWin(Constants.COMPUTER));
-        assertTrue(!t.isWin(Constants.HUMAN));
+        // This should be a draw
+        winner = t.isWin();
+        assertTrue(winner != Constants.COMPUTER);
+        assertTrue(winner != Constants.HUMAN);
         assertTrue(t.boardIsFull());
 
-        t.clearBoard();
+        t.getNewBoard();
     }
+    
 }

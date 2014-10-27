@@ -19,6 +19,15 @@ public class Constants {
     public static final int UNCLEAR      = 2;
     public static final int COMPUTER_WIN = 3;
 
+    // static value for winning text
+    public static final String HUMAN_WIN_TEXT = "Human Win";
+    public static final String COMPUTER_WIN_TEXT = "Computer Win";
+    public static final String DRAW_TEXT = "Draw";
+
+    // static value for button pressed
+    public static final String COMPUTER_PRESSED = "Computer Pressed";
+    public static final String HUMAN_PRESSED = "Human Pressed";
+
     //Text shown to the user
     public static final String TITLE = "Tic Tac Toe Game";
     public static final String EXIT_BUTTON_TEXT = "Exit Game";
