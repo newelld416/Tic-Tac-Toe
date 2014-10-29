@@ -2,10 +2,12 @@ package com;
 
 import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Random;
 
 /**
@@ -35,15 +37,15 @@ public class TicTacToeBoard extends JFrame{
 
         //Create cells
         cells=new JButton[9];
-        cells[0]=new JButton(Constants.EXIT_BUTTON_TEXT);
-        cells[1]=new JButton(Constants.EXIT_BUTTON_TEXT);
-        cells[2]=new JButton(Constants.EXIT_BUTTON_TEXT);
-        cells[3]=new JButton(Constants.EXIT_BUTTON_TEXT);
-        cells[4]=new JButton(Constants.EXIT_BUTTON_TEXT);
-        cells[5]=new JButton(Constants.EXIT_BUTTON_TEXT);
-        cells[6]=new JButton(Constants.EXIT_BUTTON_TEXT);
-        cells[7]=new JButton(Constants.EXIT_BUTTON_TEXT);
-        cells[8]=new JButton(Constants.EXIT_BUTTON_TEXT);
+        cells[0]=new JButton();
+        cells[1]=new JButton();
+        cells[2]=new JButton();
+        cells[3]=new JButton();
+        cells[4]=new JButton();
+        cells[5]=new JButton();
+        cells[6]=new JButton();
+        cells[7]=new JButton();
+        cells[8]=new JButton();
 
         //Add Handlers to the cells
         cells[0].addActionListener(new ButtonHandler0());
@@ -95,11 +97,10 @@ public class TicTacToeBoard extends JFrame{
      * This method takes care of some basic initialization stuff on the form.
      */
     private void init() {
-        //Initialize text in buttons
-        for(int i=0; i< Constants.MAX_NUMBER_OF_BUTTONS; i++){
-            cells[i].setText(Constants.EMPTY + "");
-        }
 
+        for (int i = 0; i < cells.length; i++){
+            cells[i].setIcon(null);
+        }
         //Initialize the other buttons text
         exitButton.setText(Constants.EXIT_BUTTON_TEXT);
         initButton.setText(Constants.INIT_BUTTON_TEXT);
@@ -107,6 +108,18 @@ public class TicTacToeBoard extends JFrame{
         score.setHorizontalAlignment(SwingConstants.CENTER);
         score.setVerticalAlignment(SwingConstants.CENTER);
         setVisible(true);
+
+        boolean computerGoesFirst = true; //TODO: this need to come from the UI
+        if (computerGoesFirst){
+            //Moves for the computer and checks to see if the game is over
+            Position computerMove = game.chooseComputerMove(Constants.COMPUTER);
+            game.makeMove(Constants.COMPUTER, computerMove.row, computerMove.column);
+            SetComputerPressedText(computerMove);
+            if (game.gameStatus() != Constants.UNCLEAR) {
+                SetWinnerStatus(game.gameStatus());
+                return;
+            }
+        }
     }
 
     /**
@@ -116,24 +129,29 @@ public class TicTacToeBoard extends JFrame{
      * @param button
      */
     public void turn(int x, int y, JButton button){
-        //Moves for the human and checks to see if the game is over
-        boolean moveMade = game.makeMove(Constants.HUMAN,x,y);
-        if (!moveMade) { return; }
-        button.setText(Constants.HUMAN_PRESSED);
         int gameStatus = game.gameStatus();
-        if(gameStatus != Constants.UNCLEAR){
-            SetWinnerStatus(gameStatus);
-            return;
-        }
+        if (gameStatus== Constants.UNCLEAR) {
+            //Moves for the human and checks to see if the game is over
+            boolean moveMade = game.makeMove(Constants.HUMAN, x, y);
+            if (!moveMade) {
+                return;
+            }
+            SetButtonImage(button, Constants.HUMAN);
 
-        //Moves for the computer and checks to see if the game is over
-        Position computerMove = game.chooseComputerMove(Constants.COMPUTER);
-        game.makeMove(Constants.COMPUTER, computerMove.row, computerMove.column);
-        SetComputerPressedText(computerMove);
-        gameStatus = game.gameStatus();
-        if(gameStatus != Constants.UNCLEAR){
-            SetWinnerStatus(gameStatus);
-            return;
+            if (gameStatus != Constants.UNCLEAR) {
+                SetWinnerStatus(gameStatus);
+                return;
+            }
+
+            //Moves for the computer and checks to see if the game is over
+            Position computerMove = game.chooseComputerMove(Constants.COMPUTER);
+            game.makeMove(Constants.COMPUTER, computerMove.row, computerMove.column);
+            SetComputerPressedText(computerMove);
+            gameStatus = game.gameStatus();
+            if (gameStatus != Constants.UNCLEAR) {
+                SetWinnerStatus(gameStatus);
+                return;
+            }
         }
     }
 
@@ -158,28 +176,38 @@ public class TicTacToeBoard extends JFrame{
     private void SetComputerPressedText(Position computerMove){
         if(computerMove.row == 0){
             if(computerMove.column == 0){
-                cells[0].setText(Constants.COMPUTER_PRESSED);
+                SetButtonImage(cells[0], Constants.COMPUTER);
             } else if(computerMove.column == 1){
-                cells[1].setText(Constants.COMPUTER_PRESSED);
+                SetButtonImage(cells[1], Constants.COMPUTER);
             } else if(computerMove.column == 2){
-                cells[2].setText(Constants.COMPUTER_PRESSED);
+                SetButtonImage(cells[2], Constants.COMPUTER);
             }
         } else if(computerMove.row == 1){
             if(computerMove.column == 0){
-                cells[3].setText(Constants.COMPUTER_PRESSED);
+                SetButtonImage(cells[3], Constants.COMPUTER);
             } else if(computerMove.column == 1){
-                cells[4].setText(Constants.COMPUTER_PRESSED);
+                SetButtonImage(cells[4], Constants.COMPUTER);
             } else if(computerMove.column == 2){
-                cells[5].setText(Constants.COMPUTER_PRESSED);
+                SetButtonImage(cells[5], Constants.COMPUTER);
             }
         } else if(computerMove.row == 2){
             if(computerMove.column == 0){
-                cells[6].setText(Constants.COMPUTER_PRESSED);
+                SetButtonImage(cells[6], Constants.COMPUTER);
             } else if(computerMove.column == 1){
-                cells[7].setText(Constants.COMPUTER_PRESSED);
+                SetButtonImage(cells[7], Constants.COMPUTER);
             } else if(computerMove.column == 2){
-                cells[8].setText(Constants.COMPUTER_PRESSED);
+                SetButtonImage(cells[8], Constants.COMPUTER);
             }
+        }
+    }
+
+    private void SetButtonImage(JButton button, int who){
+        try {
+            String whoPicFile = who == Constants.HUMAN ? "Human_Image.jpg" : "Computer_Image.jpg";
+            Image img = ImageIO.read(new File(whoPicFile));
+            button.setIcon(new ImageIcon(img));
+        } catch (Exception ex) {
+            System.out.println("Exception: " + ex.toString());
         }
     }
 

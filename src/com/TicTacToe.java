@@ -11,6 +11,8 @@ import javax.swing.*;
 public class TicTacToe {
 
     private int[][] board = new int[Constants.NUM_OF_ROWS][Constants.NUM_OF_COLS];
+    private int computerGamesWon;
+    private int humanGamesWon;
 
     /**
      * This is the constructor.
