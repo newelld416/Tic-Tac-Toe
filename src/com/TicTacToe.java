@@ -10,14 +10,21 @@ import javax.swing.*;
  */
 public class TicTacToe {
 
+    //Class Properties
     private int[][] board = new int[Constants.NUM_OF_ROWS][Constants.NUM_OF_COLS];
-    private int computerGamesWon;
-    private int humanGamesWon;
+    public int computerGamesWon;
+    public int humanGamesWon;
+    public int draws;
+    public boolean humanGoesFirst;
 
     /**
      * This is the constructor.
      */
     public TicTacToe () {
+        computerGamesWon = 0;
+        humanGamesWon = 0;
+        draws = 0;
+        humanGoesFirst = true;
         getNewBoard();
     }
 
@@ -97,7 +104,7 @@ public class TicTacToe {
      * @return
      */
     public boolean makeMove (int side, int row, int column) {
-        if (board[row][column] == Constants.EMPTY){
+        if (board[row][column] == Constants.EMPTY) {
             board[row][column] = side;
             return true;
         }

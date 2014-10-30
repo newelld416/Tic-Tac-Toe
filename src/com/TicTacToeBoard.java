@@ -15,8 +15,9 @@ import java.util.Random;
  */
 public class TicTacToeBoard extends JFrame{
 
-    private JButton[] cells;
-    private JButton exitButton;
+    //Class Properties
+    private JButton[][] cells;
+    private JButton whosFirstButton;
     private JButton initButton;
     private JLabel score;
     private TicTacToe game;
@@ -36,41 +37,33 @@ public class TicTacToeBoard extends JFrame{
         content.setLayout(new GridLayout(4,3));
 
         //Create cells
-        cells=new JButton[9];
-        cells[0]=new JButton();
-        cells[1]=new JButton();
-        cells[2]=new JButton();
-        cells[3]=new JButton();
-        cells[4]=new JButton();
-        cells[5]=new JButton();
-        cells[6]=new JButton();
-        cells[7]=new JButton();
-        cells[8]=new JButton();
-
-        //Add Handlers to the cells
-        cells[0].addActionListener(new ButtonHandler0());
-        cells[1].addActionListener(new ButtonHandler1());
-        cells[2].addActionListener(new ButtonHandler2());
-        cells[3].addActionListener(new ButtonHandler3());
-        cells[4].addActionListener(new ButtonHandler4());
-        cells[5].addActionListener(new ButtonHandler5());
-        cells[6].addActionListener(new ButtonHandler6());
-        cells[7].addActionListener(new ButtonHandler7());
-        cells[8].addActionListener(new ButtonHandler8());
-
-        for (int i = 0; i< Constants.MAX_NUMBER_OF_BUTTONS; i++){
-            cells[i].setFont(new Font("Arial", Font.BOLD, 24));
+        cells=new JButton[Constants.BUTTONS_PER_ROW][Constants.BUTTONS_PER_ROW];
+        for(int i = 0; i < Constants.BUTTONS_PER_ROW; i++) {
+            for(int j = 0; j < Constants.BUTTONS_PER_ROW; j++) {
+                cells[i][j] = new JButton();
+                cells[i][j].addActionListener(new ActionButtonListener(i,j));
+                content.add(cells[i][j]);
+            }
         }
 
         //Initialize the Exit and Init Buttons
-        exitButton = new JButton();
-        exitButton.addActionListener(new ActionListener() {
+        whosFirstButton = new JButton();
+        setWhoButtonText(Constants.HUMAN_FIRST_TEXT);
+        whosFirstButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+                if(whosFirstButton.getText().contains(Constants.HUMAN_FIRST_TEXT)){
+                    setWhoButtonText(Constants.COMPUTER_FIRST_TEXT);
+                    game.humanGoesFirst = false;
+                } else {
+                    setWhoButtonText(Constants.HUMAN_FIRST_TEXT);
+                    game.humanGoesFirst = true;
+                }
+                init();
             }
         });
         initButton = new JButton();
+        initButton.setText(Constants.INIT_BUTTON_TEXT);
         initButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -80,45 +73,36 @@ public class TicTacToeBoard extends JFrame{
         });
 
         score = new JLabel();
-
-        //Add elements to the grid content pane
-        for(int i=0; i< Constants.MAX_NUMBER_OF_BUTTONS; i++) {
-            content.add(cells[i]);
-        }
-
-        content.add(exitButton);
+        score.setHorizontalAlignment(SwingConstants.CENTER);
+        score.setVerticalAlignment(SwingConstants.CENTER);
+        score.setToolTipText(Constants.SCORE_TOOL_TIP);
+        content.add(whosFirstButton);
         content.add(score);
         content.add(initButton);
-
+        setScoreText(-1);
         init();
+        setVisible(true);
     }
 
     /**
      * This method takes care of some basic initialization stuff on the form.
      */
     private void init() {
-
-        for (int i = 0; i < cells.length; i++){
-            cells[i].setIcon(null);
-        }
-        //Initialize the other buttons text
-        exitButton.setText(Constants.EXIT_BUTTON_TEXT);
-        initButton.setText(Constants.INIT_BUTTON_TEXT);
-        score.setText(Constants.INITIAL_SCORE_TEXT);
-        score.setHorizontalAlignment(SwingConstants.CENTER);
-        score.setVerticalAlignment(SwingConstants.CENTER);
-        setVisible(true);
-
-        boolean computerGoesFirst = true; //TODO: this need to come from the UI
-        if (computerGoesFirst){
-            //Moves for the computer and checks to see if the game is over
-            Position computerMove = game.chooseComputerMove(Constants.COMPUTER);
-            game.makeMove(Constants.COMPUTER, computerMove.row, computerMove.column);
-            SetComputerPressedText(computerMove);
-            if (game.gameStatus() != Constants.UNCLEAR) {
-                SetWinnerStatus(game.gameStatus());
-                return;
+        game.getNewBoard();
+        for (int i = 0; i < Constants.BUTTONS_PER_ROW; i++){
+            for (int j = 0; j < Constants.BUTTONS_PER_ROW; j++) {
+                cells[i][j].setIcon(null);
             }
+        }
+
+        setScoreText(-1);
+
+        if (!game.humanGoesFirst){
+            Random r = new Random();
+            int randomRow = r.nextInt(3);
+            int randomColumn = r.nextInt(3);
+            game.makeMove(Constants.COMPUTER, randomRow, randomColumn);
+            SetButtonImage(cells[randomRow][randomColumn], Constants.COMPUTER);
         }
     }
 
@@ -131,27 +115,49 @@ public class TicTacToeBoard extends JFrame{
     public void turn(int x, int y, JButton button){
         int gameStatus = game.gameStatus();
         if (gameStatus== Constants.UNCLEAR) {
-            //Moves for the human and checks to see if the game is over
-            boolean moveMade = game.makeMove(Constants.HUMAN, x, y);
-            if (!moveMade) {
+            boolean moveMade = makeHumanMove(x, y, button);
+            if(!moveMade){
                 return;
             }
-            SetButtonImage(button, Constants.HUMAN);
-
-            if (gameStatus != Constants.UNCLEAR) {
-                SetWinnerStatus(gameStatus);
-                return;
-            }
-
-            //Moves for the computer and checks to see if the game is over
-            Position computerMove = game.chooseComputerMove(Constants.COMPUTER);
-            game.makeMove(Constants.COMPUTER, computerMove.row, computerMove.column);
-            SetComputerPressedText(computerMove);
             gameStatus = game.gameStatus();
             if (gameStatus != Constants.UNCLEAR) {
-                SetWinnerStatus(gameStatus);
+                setScoreText(gameStatus);
                 return;
             }
+            makeComputerMove();
+        }
+    }
+
+    /**
+     * This method makes a move for a human turn
+     * @param x
+     * @param y
+     * @param button
+     */
+    private boolean makeHumanMove(int x, int y, JButton button) {
+        //Moves for the human and checks to see if the game is over
+        boolean moveMade = game.makeMove(Constants.HUMAN, x, y);
+        if (!moveMade) {
+            return moveMade;
+        }
+        SetButtonImage(button, Constants.HUMAN);
+        return moveMade;
+    }
+
+    /**
+     * This method makes a move for a computer turn
+     */
+    private void makeComputerMove() {
+        Position computerMove = game.chooseComputerMove(Constants.COMPUTER);
+        boolean moveMade = game.makeMove(Constants.COMPUTER, computerMove.row, computerMove.column);
+        if (!moveMade) {
+            return;
+        }
+        SetButtonImage(cells[computerMove.row][computerMove.column], Constants.COMPUTER);
+        int gameStatus = game.gameStatus();
+        if (gameStatus != Constants.UNCLEAR) {
+            setScoreText(gameStatus);
+            return;
         }
     }
 
@@ -159,51 +165,45 @@ public class TicTacToeBoard extends JFrame{
      * This method sets the score label if there is a winner or a draw.
      * @param gameStatus
      */
-    private void SetWinnerStatus(int gameStatus){
+    private void setScoreText(int gameStatus){
+        StringBuilder statusText = new StringBuilder("<html>");
         if (gameStatus  == Constants.HUMAN_WIN){
-            score.setText(Constants.HUMAN_WIN_TEXT);
+            game.humanGamesWon++;
+            statusText.append(Constants.HUMAN_WIN_TEXT);
         } else if (gameStatus == Constants.COMPUTER_WIN){
-            score.setText(Constants.COMPUTER_WIN_TEXT);
+            game.computerGamesWon++;
+            statusText.append(Constants.COMPUTER_WIN_TEXT);
         } else if (gameStatus == Constants.DRAW){
-            score.setText(Constants.DRAW_TEXT);
+            game.draws++;
+            statusText.append(Constants.DRAW_TEXT);
+        } else {
+            statusText.append(Constants.IN_PROGRESS);
         }
+
+        statusText.append("<br><br>");
+        statusText.append("Computer Wins: " + game.computerGamesWon + "<br>");
+        statusText.append("Human Wins: " + game.humanGamesWon + "<br>");
+        statusText.append("Draws: " + game.draws + "<br>");
+        statusText.append("</html>");
+        score.setText(statusText.toString());
     }
 
     /**
-     * This method set the text of the correct button chosen by the computer.
-     * @param computerMove
+     * This method sets the text of the button whichdecides who goes first.
+     * @param who
      */
-    private void SetComputerPressedText(Position computerMove){
-        if(computerMove.row == 0){
-            if(computerMove.column == 0){
-                SetButtonImage(cells[0], Constants.COMPUTER);
-            } else if(computerMove.column == 1){
-                SetButtonImage(cells[1], Constants.COMPUTER);
-            } else if(computerMove.column == 2){
-                SetButtonImage(cells[2], Constants.COMPUTER);
-            }
-        } else if(computerMove.row == 1){
-            if(computerMove.column == 0){
-                SetButtonImage(cells[3], Constants.COMPUTER);
-            } else if(computerMove.column == 1){
-                SetButtonImage(cells[4], Constants.COMPUTER);
-            } else if(computerMove.column == 2){
-                SetButtonImage(cells[5], Constants.COMPUTER);
-            }
-        } else if(computerMove.row == 2){
-            if(computerMove.column == 0){
-                SetButtonImage(cells[6], Constants.COMPUTER);
-            } else if(computerMove.column == 1){
-                SetButtonImage(cells[7], Constants.COMPUTER);
-            } else if(computerMove.column == 2){
-                SetButtonImage(cells[8], Constants.COMPUTER);
-            }
-        }
+    private void setWhoButtonText(String who){
+        whosFirstButton.setText("<html>Click to Switch<br><br>" + who + "</html>");
     }
 
+    /**
+     * This method sets the correct image on the button piece
+     * @param button
+     * @param who
+     */
     private void SetButtonImage(JButton button, int who){
         try {
-            String whoPicFile = who == Constants.HUMAN ? "Human_Image.jpg" : "Computer_Image.jpg";
+            String whoPicFile = who == Constants.HUMAN ? Constants.HUMAN_IMAGE : Constants.COMPUTER_IMAGE;
             Image img = ImageIO.read(new File(whoPicFile));
             button.setIcon(new ImageIcon(img));
         } catch (Exception ex) {
@@ -219,69 +219,23 @@ public class TicTacToeBoard extends JFrame{
         TicTacToeBoard newGame = new TicTacToeBoard();
     }
 
-    /**
-     * Button Handler for button number 0
-     */
-    private class ButtonHandler0 implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            turn(0, 0, (JButton) e.getSource());
+    class ActionButtonListener implements ActionListener {
+        private int row;
+        private int column;
+
+        /**
+         * This is the constructor.
+         */
+        public ActionButtonListener(int row, int column) {
+            super();
+            this.row = row;
+            this.column = column;
         }
-    }
 
-    /**
-     * Button Handler for button number 1
-     */
-    private class ButtonHandler1 implements ActionListener {
-        public void actionPerformed(ActionEvent e) { turn(0,1,(JButton)e.getSource()); }
-    }
-
-    /**
-     * Button Handler for button number 2
-     */
-    private class ButtonHandler2 implements ActionListener {
-        public void actionPerformed(ActionEvent e) { turn(0,2,(JButton)e.getSource()); }
-    }
-
-    /**
-     * Button Handler for button number 3
-     */
-    private class ButtonHandler3 implements ActionListener {
-        public void actionPerformed(ActionEvent e) { turn(1,0,(JButton)e.getSource()); }
-    }
-
-    /**
-     * Button Handler for button number 4
-     */
-    private class ButtonHandler4 implements ActionListener {
-        public void actionPerformed(ActionEvent e) { turn(1,1,(JButton)e.getSource()); }
-    }
-
-    /**
-     * Button Handler for button number 5
-     */
-    private class ButtonHandler5 implements ActionListener {
-        public void actionPerformed(ActionEvent e) { turn(1,2,(JButton)e.getSource()); }
-    }
-
-    /**
-     * Button Handler for button number 6
-     */
-    private class ButtonHandler6 implements ActionListener {
-        public void actionPerformed(ActionEvent e) { turn(2,0,(JButton)e.getSource()); }
-    }
-
-    /**
-     * Button Handler for button number 7
-     */
-    private class ButtonHandler7 implements ActionListener {
-        public void actionPerformed(ActionEvent e) { turn(2,1,(JButton)e.getSource()); }
-    }
-
-    /**
-     * Button Handler for button number 8
-     */
-    private class ButtonHandler8 implements ActionListener {
-        public void actionPerformed(ActionEvent e) { turn(2,2,(JButton)e.getSource()); }
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            turn(this.row, this.column, (JButton) e.getSource());
+        }
     }
 }
 
