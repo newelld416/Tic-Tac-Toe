@@ -56,8 +56,8 @@ public class TicTacToeBoard extends JFrame{
                     setWhoButtonText(Constants.COMPUTER_FIRST_TEXT);
                     game.setHumanGoesFirst(false);
                 } else {
-                    setWhoButtonText(Constants.HUMAN_FIRST_TEXT);
-                    game.setHumanGoesFirst(false);
+                    setWhoButtonText(Constants.COMPUTER_FIRST_TEXT);
+                    game.setHumanGoesFirst(true);
                 }
                 init();
             }
