@@ -21,8 +21,8 @@ public class TicTacToeBoard extends JFrame{
     private JButton initButton;
     private JLabel score;
     private TicTacToe game;
-
     private Container content;
+
     /**
      * This is the constructor.
      */
@@ -54,14 +54,21 @@ public class TicTacToeBoard extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 if(whosFirstButton.getText().contains(Constants.HUMAN_FIRST_TEXT)){
                     setWhoButtonText(Constants.COMPUTER_FIRST_TEXT);
-                    game.humanGoesFirst = false;
+                    game.setHumanGoesFirst(false);
                 } else {
                     setWhoButtonText(Constants.HUMAN_FIRST_TEXT);
-                    game.humanGoesFirst = true;
+                    game.setHumanGoesFirst(false);
                 }
                 init();
             }
         });
+        content.add(whosFirstButton);
+
+        score = new JLabel();
+        score.setHorizontalAlignment(SwingConstants.CENTER);
+        score.setVerticalAlignment(SwingConstants.CENTER);
+        content.add(score);
+
         initButton = new JButton();
         initButton.setText(Constants.INIT_BUTTON_TEXT);
         initButton.addActionListener(new ActionListener() {
@@ -71,15 +78,8 @@ public class TicTacToeBoard extends JFrame{
                 init();
             }
         });
-
-        score = new JLabel();
-        score.setHorizontalAlignment(SwingConstants.CENTER);
-        score.setVerticalAlignment(SwingConstants.CENTER);
-        score.setToolTipText(Constants.SCORE_TOOL_TIP);
-        content.add(whosFirstButton);
-        content.add(score);
         content.add(initButton);
-        setScoreText(-1);
+
         init();
         setVisible(true);
     }
@@ -97,12 +97,12 @@ public class TicTacToeBoard extends JFrame{
 
         setScoreText(-1);
 
-        if (!game.humanGoesFirst){
+        if (!game.getHumanGoesFirst()){
             Random r = new Random();
             int randomRow = r.nextInt(3);
             int randomColumn = r.nextInt(3);
             game.makeMove(Constants.COMPUTER, randomRow, randomColumn);
-            SetButtonImage(cells[randomRow][randomColumn], Constants.COMPUTER);
+            setButtonImage(cells[randomRow][randomColumn], Constants.COMPUTER);
         }
     }
 
@@ -140,7 +140,7 @@ public class TicTacToeBoard extends JFrame{
         if (!moveMade) {
             return moveMade;
         }
-        SetButtonImage(button, Constants.HUMAN);
+        setButtonImage(button, Constants.HUMAN);
         return moveMade;
     }
 
@@ -149,11 +149,11 @@ public class TicTacToeBoard extends JFrame{
      */
     private void makeComputerMove() {
         Position computerMove = game.chooseComputerMove(Constants.COMPUTER);
-        boolean moveMade = game.makeMove(Constants.COMPUTER, computerMove.row, computerMove.column);
+        boolean moveMade = game.makeMove(Constants.COMPUTER, computerMove.getRow(), computerMove.getColumn());
         if (!moveMade) {
             return;
         }
-        SetButtonImage(cells[computerMove.row][computerMove.column], Constants.COMPUTER);
+        setButtonImage(cells[computerMove.getRow()][computerMove.getColumn()], Constants.COMPUTER);
         int gameStatus = game.gameStatus();
         if (gameStatus != Constants.UNCLEAR) {
             setScoreText(gameStatus);
@@ -168,22 +168,22 @@ public class TicTacToeBoard extends JFrame{
     private void setScoreText(int gameStatus){
         StringBuilder statusText = new StringBuilder("<html>");
         if (gameStatus  == Constants.HUMAN_WIN){
-            game.humanGamesWon++;
+            game.setHumanGamesWon(game.getHumanGamesWon() + 1);
             statusText.append(Constants.HUMAN_WIN_TEXT);
         } else if (gameStatus == Constants.COMPUTER_WIN){
-            game.computerGamesWon++;
+            game.setComputerGamesWon(game.getComputerGamesWon() + 1);
             statusText.append(Constants.COMPUTER_WIN_TEXT);
         } else if (gameStatus == Constants.DRAW){
-            game.draws++;
+            game.setDraws(game.getDraws() + 1);
             statusText.append(Constants.DRAW_TEXT);
         } else {
             statusText.append(Constants.IN_PROGRESS);
         }
 
         statusText.append("<br><br>");
-        statusText.append("Computer Wins: " + game.computerGamesWon + "<br>");
-        statusText.append("Human Wins: " + game.humanGamesWon + "<br>");
-        statusText.append("Draws: " + game.draws + "<br>");
+        statusText.append("Computer Wins: " + game.getComputerGamesWon() + "<br>");
+        statusText.append("Human Wins: " + game.getHumanGamesWon() + "<br>");
+        statusText.append("Draws: " + game.getDraws() + "<br>");
         statusText.append("</html>");
         score.setText(statusText.toString());
     }
@@ -201,7 +201,7 @@ public class TicTacToeBoard extends JFrame{
      * @param button
      * @param who
      */
-    private void SetButtonImage(JButton button, int who){
+    private void setButtonImage(JButton button, int who){
         try {
             String whoPicFile = who == Constants.HUMAN ? Constants.HUMAN_IMAGE : Constants.COMPUTER_IMAGE;
             Image img = ImageIO.read(new File(whoPicFile));
@@ -219,6 +219,9 @@ public class TicTacToeBoard extends JFrame{
         TicTacToeBoard newGame = new TicTacToeBoard();
     }
 
+    /**
+     * This class allows us to create the button listeners specific to an individual button
+     */
     class ActionButtonListener implements ActionListener {
         private int row;
         private int column;

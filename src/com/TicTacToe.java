@@ -12,10 +12,10 @@ public class TicTacToe {
 
     //Class Properties
     private int[][] board = new int[Constants.NUM_OF_ROWS][Constants.NUM_OF_COLS];
-    public int computerGamesWon;
-    public int humanGamesWon;
-    public int draws;
-    public boolean humanGoesFirst;
+    private int computerGamesWon;
+    private int humanGamesWon;
+    private int draws;
+    private boolean humanGoesFirst;
 
     /**
      * This is the constructor.
@@ -26,6 +26,40 @@ public class TicTacToe {
         draws = 0;
         humanGoesFirst = true;
         getNewBoard();
+    }
+
+    public int[][] getBoard() { return this.board; }
+
+    public int getComputerGamesWon() {
+        return this.computerGamesWon;
+    }
+
+    public void setComputerGamesWon(int gamesWon) {
+        this.computerGamesWon = gamesWon;
+    }
+
+    public int getHumanGamesWon() {
+        return this.humanGamesWon;
+    }
+
+    public void setHumanGamesWon(int gamesWon){
+        this.humanGamesWon = gamesWon;
+    }
+
+    public int getDraws() {
+        return this.draws;
+    }
+
+    public void setDraws(int draws){
+        this.draws = draws;
+    }
+
+    public boolean getHumanGoesFirst() {
+        return this.humanGoesFirst;
+    }
+
+    public void setHumanGoesFirst(boolean humanGoesFirst){
+        this.humanGoesFirst = humanGoesFirst;
     }
 
     /**
@@ -85,8 +119,8 @@ public class TicTacToe {
                     board[row][column] = side;
                     reply = chooseComputerMove(opp);
                     board[row][column] = Constants.EMPTY;
-                    if (side == Constants.COMPUTER && reply.value > value || side == Constants.HUMAN && reply.value < value) {
-                        value = reply.value;
+                    if (side == Constants.COMPUTER && reply.getValue() > value || side == Constants.HUMAN && reply.getValue() < value) {
+                        value = reply.getValue();
                         bestRow = row;
                         bestColumn = column;
                     }
