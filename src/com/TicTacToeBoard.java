@@ -1,7 +1,5 @@
 package com;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +32,7 @@ public class TicTacToeBoard extends JFrame{
         setSize(Constants.WIDTH, Constants.HEIGHT);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         content = getContentPane();
-        content.setLayout(new GridLayout(4,3));
+        content.setLayout(new GridLayout(Constants.NUM_OF_ROWS + 1,Constants.NUM_OF_COLS));
 
         //Create cells
         cells=new JButton[Constants.BUTTONS_PER_ROW][Constants.BUTTONS_PER_ROW];
@@ -56,7 +54,7 @@ public class TicTacToeBoard extends JFrame{
                     setWhoButtonText(Constants.COMPUTER_FIRST_TEXT);
                     game.setHumanGoesFirst(false);
                 } else {
-                    setWhoButtonText(Constants.COMPUTER_FIRST_TEXT);
+                    setWhoButtonText(Constants.HUMAN_FIRST_TEXT);
                     game.setHumanGoesFirst(true);
                 }
                 init();
@@ -99,8 +97,8 @@ public class TicTacToeBoard extends JFrame{
 
         if (!game.getHumanGoesFirst()){
             Random r = new Random();
-            int randomRow = r.nextInt(3);
-            int randomColumn = r.nextInt(3);
+            int randomRow = r.nextInt(Constants.NUM_OF_ROWS);
+            int randomColumn = r.nextInt(Constants.NUM_OF_COLS);
             game.makeMove(Constants.COMPUTER, randomRow, randomColumn);
             setButtonImage(cells[randomRow][randomColumn], Constants.COMPUTER);
         }
